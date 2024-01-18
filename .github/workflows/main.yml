@@ -1,8 +1,8 @@
-name: .NET CI
+name: .NET Core CI
 
 on:
   push:
-    branches: ["main"]
+    branches: [ main ]
 
 jobs:
   build:
@@ -10,28 +10,28 @@ jobs:
     runs-on: windows-latest
 
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
+      - uses: actions/checkout@v2
 
       - name: Setup .NET
-        uses: actions/setup-dotnet@v2
+        uses: actions/setup-dotnet@v1
         with:
-          dotnet-version: 8.0.100
+          dotnet-version: 8.0.x
 
-      - name: Install dependencies
+      - name: Restore dependencies
         run: dotnet restore
 
       - name: Build
-        run: dotnet build --configuration Release --no-restore
+        run: dotnet build --no-restore
 
       - name: Test
-        run: dotnet test --no-restore --verbosity normal
+        run: dotnet test --no-build --verbosity normal
 
       - name: Publish
-        run: dotnet publish --configuration Release --no-build --runtime win-x64 --self-contained true -p:PublishSingleFile=true -o ./publish
+        run: dotnet publish --configuration Release --runtime win-x64 --self-contained true --output ./publish
+
 
       - name: Upload artifact
         uses: actions/upload-artifact@v2
         with:
-          name: feature-matching-win-x64
-          path: ./publish/*.exe
+          name: myapp
+          path: ./publish/*
